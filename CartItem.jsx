@@ -5,6 +5,14 @@ function CartItem({ setPage }) {
   const items = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
 
+  const changeQty = (id, qty) => {
+    if (qty <= 0) {
+      dispatch(removeItem(id));
+    } else {
+      dispatch(updateQuantity({ id, quantity: qty }));
+    }
+  };
+
   const total = items.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -17,29 +25,14 @@ function CartItem({ setPage }) {
       {items.map(item => (
         <div key={item.id}>
           <h3>{item.name}</h3>
-          <p>Unit: ${item.price}</p>
 
-          <button
-            onClick={() =>
-              dispatch(updateQuantity({
-                id: item.id,
-                quantity: item.quantity - 1
-              }))
-            }
-          >
+          <button onClick={() => changeQty(item.id, item.quantity - 1)}>
             -
           </button>
 
           <span>{item.quantity}</span>
 
-          <button
-            onClick={() =>
-              dispatch(updateQuantity({
-                id: item.id,
-                quantity: item.quantity + 1
-              }))
-            }
-          >
+          <button onClick={() => changeQty(item.id, item.quantity + 1)}>
             +
           </button>
 
@@ -57,7 +50,7 @@ function CartItem({ setPage }) {
         Continue Shopping
       </button>
 
-      <button onClick={() => alert("Checkout Successful!")}>
+      <button onClick={() => alert("Checkout done!")}>
         Checkout
       </button>
     </div>
