@@ -1,53 +1,54 @@
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { addToCart } from '../features/cart/CartSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "./CartSlice";
 
-const plantsData = {
+const products = {
   aromatic: [
-    { id: 1, name: 'Lavender', desc: 'Relaxing scent', price: 15, image: 'https://via.placeholder.com/200x200?text=Lavender' },
-    { id: 2, name: 'Rosemary', desc: 'Fresh herb aroma', price: 12, image: 'https://via.placeholder.com/200x200?text=Rosemary' },
-    { id: 3, name: 'Mint', desc: 'Refreshing leaves', price: 10, image: 'https://via.placeholder.com/200x200?text=Mint' },
+    { id: 1, name: "Lavender", price: 10, desc: "Calming plant" },
+    { id: 2, name: "Mint", price: 8, desc: "Fresh smell" },
+    { id: 3, name: "Rosemary", price: 12, desc: "Aromatic herb" },
   ],
   medicinal: [
-    { id: 4, name: 'Aloe Vera', desc: 'Healing gel', price: 20, image: 'https://via.placeholder.com/200x200?text=Aloe+Vera' },
-    { id: 5, name: 'Tulsi', desc: 'Immunity booster', price: 18, image: 'https://via.placeholder.com/200x200?text=Tulsi' },
-    { id: 6, name: 'Ginger', desc: 'Digestive aid', price: 14, image: 'https://via.placeholder.com/200x200?text=Ginger' },
+    { id: 4, name: "Aloe Vera", price: 15, desc: "Healing plant" },
+    { id: 5, name: "Turmeric", price: 9, desc: "Anti-inflammatory" },
+    { id: 6, name: "Ginger", price: 11, desc: "Boost immunity" },
+  ],
+  ornamental: [
+    { id: 7, name: "Orchid", price: 25, desc: "Beautiful flower" },
+    { id: 8, name: "Bonsai", price: 30, desc: "Mini tree" },
+    { id: 9, name: "Cactus", price: 7, desc: "Low maintenance" },
   ],
 };
 
 function ProductList() {
   const dispatch = useDispatch();
+  const cart = useSelector(state => state.cart.items);
 
-  const handleAddToCart = (plant) => {
-    dispatch(addToCart({ ...plant, quantity: 1 }));
-  };
-
-  const renderProducts = (plants, title) => (
-    <div className="section">
-      <h2>{title}</h2>
-      <div className="products-grid">
-        {plants.map((plant) => (
-          <div key={plant.id} className="product-card">
-            <img src={plant.image} alt={plant.name} className="product-image" />
-            <div className="product-info">
-              <div className="product-name">{plant.name}</div>
-              <div className="product-desc">{plant.desc}</div>
-              <div className="product-price">${plant.price}</div>
-              <button className="add-btn" onClick={() => handleAddToCart(plant)}>
-                Add to Cart
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+  const inCart = (id) => cart.some(i => i.id === id);
 
   return (
-    <div className="products-container">
-      <h1>Our Plants</h1>
-      {renderProducts(plantsData.aromatic, '🌿 Aromatic Plants')}
-      {renderProducts(plantsData.medicinal, '🌱 Medicinal Plants')}
+    <div>
+      <h1>Products</h1>
+
+      {Object.entries(products).map(([category, items]) => (
+        <div key={category}>
+          <h2>{category.toUpperCase()}</h2>
+
+          {items.map(p => (
+            <div key={p.id}>
+              <h3>{p.name}</h3>
+              <p>{p.desc}</p>
+              <p>${p.price}</p>
+
+              <button
+                disabled={inCart(p.id)}
+                onClick={() => dispatch(addItem(p))}
+              >
+                {inCart(p.id) ? "Added" : "Add to Cart"}
+              </button>
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
